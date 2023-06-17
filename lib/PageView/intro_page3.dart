@@ -16,7 +16,7 @@ class IntroPage3 extends StatelessWidget {
           child: Center(
         child: Column(
           children: [
-            SizedBox(height: screenWidth * 0.1),
+            SizedBox(height: screenWidth * 0.05),
             Lottie.network(
               'https://assets5.lottiefiles.com/packages/lf20_s9dkwhdi.json',
             ),
@@ -37,6 +37,7 @@ class IntroPage3 extends StatelessWidget {
                   bodyText:
                       'PWE aims to provide an objective and reliable stress management system using a sophisticated machine learning model to suggest songs and provide ideas to to overcome stress. Our goal is to levarage the power of music and practical strategies to help individuals cope with stress effectively.\n\nThe model utilizes various indicators, including respiration rate, body temperature, blood oxygen, eye movement, sleeping hours, and heart rate. By combining these features, our model can provide a comprehensive assessment of an individual stress level on a scale of 0, 1, 2, 3, 4.'),
             ),
+
           ],
         ),
       )),
