@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:emotion/colors.dart';
+import 'package:emotion/widgets/body_text.dart';
 import 'package:emotion/widgets/head_text.dart';
 import 'package:emotion/widgets/text_field.dart';
 import 'package:flutter/material.dart';
@@ -80,12 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 multiplicationFactor: 0.1,
               ),
             ),
+            const BodyText(bodyText: 'Enter the following data to know your stress'),
             CustomTextField(
                 controller: respirationRateController,
                 hintText: 'Enter respiration rate'),
             CustomTextField(
                 controller: bodyTemperaturController,
-                hintText: 'Enter body temperature'),
+                hintText: 'Enter body temperature in F'),
             CustomTextField(
                 controller: bloodOxygenController,
                 hintText: 'Enter blood oxygen %'),
@@ -94,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 hintText: 'Enter your sleeping hour'),
             CustomTextField(
                 controller: heartRateController,
-                hintText: 'Enter your heart rate'),
+                hintText: 'Enter your heart rate in bpm'),
             ElevatedButton(
               onPressed: isModelLoaded
                   ? () {
@@ -137,7 +139,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                         style: const TextStyle(
                                             fontWeight: FontWeight.bold),
                                       ),
-                                    )
+                                    ),
+                                    SizedBox(height: screenWidth * 0.02),
+                                    if(_outputInt <=1) const HeadText(text: 'Congratulations! You have low stress level', color: Colors.green, multiplicationFactor: 0.035),
+                                    if( 1> _outputInt && _outputInt <=2) const HeadText(text: 'You have a moderate stress level', color: Colors.orange, multiplicationFactor: 0.035),
+                                    if( 2> _outputInt && _outputInt <=3) const HeadText(text: 'You have a severe stress level', color: Colors.redAccent, multiplicationFactor: 0.035),
+                                    if( 3> _outputInt && _outputInt <=4) const HeadText(text: 'You have a SERIOUS stress level', color: Colors.red, multiplicationFactor: 0.035),
+
                                   ],
                                 ),
                               ),
