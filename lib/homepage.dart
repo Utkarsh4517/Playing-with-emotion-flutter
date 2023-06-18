@@ -1,7 +1,10 @@
+import 'dart:ffi';
+
 import 'package:emotion/colors.dart';
 import 'package:emotion/widgets/head_text.dart';
 import 'package:emotion/widgets/text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'dart:typed_data';
 
@@ -25,6 +28,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   late Interpreter _interpreter;
   bool isModelLoaded = false;
+  double percent = 0;
+  double percentRoundoff = 0;
   @override
   void initState() {
     super.initState();
@@ -38,25 +43,25 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-double runInference(List<double> inputs) {
-  final inputTensors = _interpreter.getInputTensors();
-  final outputTensors = _interpreter.getOutputTensors();
+  double runInference(List<double> inputs) {
+    final inputTensors = _interpreter.getInputTensors();
+    final outputTensors = _interpreter.getOutputTensors();
 
-  if (inputTensors.isNotEmpty && outputTensors.isNotEmpty) {
-    final inputType = inputTensors[0].type;
-    final outputType = outputTensors[0].type;
+    if (inputTensors.isNotEmpty && outputTensors.isNotEmpty) {
+      final inputType = inputTensors[0].type;
+      final outputType = outputTensors[0].type;
 
-    final inputBuffer = Float32List.fromList(inputs);
-    final outputBuffer = Float32List(outputTensors[0].shape.reduce((a, b) => a * b));
+      final inputBuffer = Float32List.fromList(inputs);
+      final outputBuffer =
+          Float32List(outputTensors[0].shape.reduce((a, b) => a * b));
 
-    _interpreter.run(inputBuffer.buffer, outputBuffer.buffer);
+      _interpreter.run(inputBuffer.buffer, outputBuffer.buffer);
 
-    return outputBuffer[0];
+      return outputBuffer[0];
+    }
+
+    return 0.0; // Return a default value or handle the error accordingly
   }
-
-  return 0.0; // Return a default value or handle the error accordingly
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -105,17 +110,42 @@ double runInference(List<double> inputs) {
                         output = runInference(inputs);
                         int outputInt = output.round();
                         _outputInt = outputInt;
+                        percent = (output / 4) * 100;
+                        percentRoundoff =
+                            double.parse(percent.toStringAsFixed(2));
                       });
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              content: Container(
+                                width: screenWidth * 0.9,
+                                height: screenWidth,
+                                decoration: const BoxDecoration(),
+                                child: Column(
+                                  children: [
+                                    Text('Your stress is $output'),
+                                    SizedBox(height: screenWidth * 0.1),
+                                    CircularPercentIndicator(
+                                      radius: 50,
+                                      lineWidth: 10,
+                                      percent: (_outputInt / 5),
+                                      progressColor: Colors.green,
+                                      animation: true,
+                                      center: Text(
+                                        '$percentRoundoff %',
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            );
+                          });
                     }
                   : null,
               child: const Text('Get'),
-            ),
-            SizedBox(
-              height: screenWidth * 0.2,
-            ),
-            Text(
-              'Your stress level is of level : $_outputInt',
-              style: TextStyle(fontSize: 20),
             ),
           ],
         ),
